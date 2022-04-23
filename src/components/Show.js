@@ -22,12 +22,31 @@ const Show = () => {
     }
     //4- funcion para eliminar un doc
     const deleteProduct = async(id) =>{
-        const productDoc = doc=(db, "products", id)
+        const productDoc = doc(db, "products", id)
         await deleteDoc(productDoc)
         getProducts()
     }
     //5- funcion de confirmacion para sweet alert 2
-
+    const confirmDelete = (id)=>{
+        Swal.fire({
+            title: 'Remove the product?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+                deleteProduct(id)
+              Swal.fire(
+                'Deleted!',
+                'Your file has been deleted.',
+                'success'
+              )
+            }
+          })
+    }
     //6- usamos useEffect
     useEffect(()=>{
         getProducts()
@@ -41,13 +60,15 @@ const Show = () => {
         <div className='row'>
             <div className='col'>
             <div className='d-grip gap-2'>
-                <Link to="/create" className='btn btn-secondary mt-2 mb-2'></Link>
+                <Link to="/create" className='btn btn-secondary mt-2 mb-2'>Create</Link>
             </div>
             <table className='table table-dark table-hover'>
             <thead>
-                <tr>Description</tr>
-                <tr>Stock</tr>
-                <tr>Actions</tr>
+                <tr>
+                    <th>Description</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
             </thead>
             <tbody>
                 {products.map(product =>(
@@ -56,7 +77,7 @@ const Show = () => {
                         <td>{product.stock}</td>
                         <td>
                             <Link to={`/edit/${product.id}`} className="btn btn-light"><i className="fa-solid fa-pencil"></i></Link>
-                            <button onClick={()=> deleteProduct(product.id)} className="btn btn-danger"><i className="fa-solid fa-trash"></i></button>
+                            <button onClick={()=> {confirmDelete(product.id)}} className="btn btn-danger"><i className="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 ))}
